@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -18,6 +17,7 @@ import com.example.quick_food.R;
 import com.example.quick_food.activities.MainActivity;
 import com.example.quick_food.adapters.CategoriesAdapter;
 import com.example.quick_food.adapters.PopularItemsGridAdapter;
+import com.example.quick_food.interfaces.OnCategoryDetailsClickListener;
 import com.example.quick_food.interfaces.OnFragmentTitleChangeListener;
 import com.example.quick_food.interfaces.OnProductDetailsClickListener;
 import com.example.quick_food.models.CategoryModel;
@@ -34,6 +34,7 @@ public class PopularItemsFragment extends Fragment {
     private List<DishModel> itemsList;
     private OnProductDetailsClickListener productDetailsClickListener;
     private OnFragmentTitleChangeListener fragmentTitleChangeListener;
+    private OnCategoryDetailsClickListener categoryDetailsClickListener;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -47,6 +48,11 @@ public class PopularItemsFragment extends Fragment {
             fragmentTitleChangeListener = (OnFragmentTitleChangeListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context + " must implement OnFragmentTitleChangeListener");
+        }
+        try {
+            categoryDetailsClickListener = (OnCategoryDetailsClickListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context + " must implement OnCategoryDetailsClickListener");
         }
     }
 
@@ -94,7 +100,7 @@ public class PopularItemsFragment extends Fragment {
         RecyclerView recyclerView = view.findViewById(R.id.popular_categories_rv__fragment_popular_items);
 
         // Создание адаптера и установка данных
-        CategoriesAdapter adapter = new CategoriesAdapter(popularCategoriesList);
+        CategoriesAdapter adapter = new CategoriesAdapter(popularCategoriesList, categoryDetailsClickListener);
         recyclerView.setAdapter(adapter);
         recyclerView.addItemDecoration(new PopularItemSpacingDecoration(DpToPixels.convert(12, getContext()), DpToPixels.convert(26, getContext())));
     }

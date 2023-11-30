@@ -18,7 +18,7 @@ import java.util.List;
 
 public class PopularItemsAdapter extends RecyclerView.Adapter<PopularItemsAdapter.PopularItemViewHolder>{
     private final List<DishModel> items;
-    private OnProductDetailsClickListener productDetailsClickListener;
+    private final OnProductDetailsClickListener productDetailsClickListener;
 
     public PopularItemsAdapter(List<DishModel> items, OnProductDetailsClickListener productDetailsClickListener) {
         this.items = items;

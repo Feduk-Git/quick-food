@@ -11,8 +11,9 @@
     <color name="grey">#ADADAD</color>
     <color name="accent">#EC3F19</color>
     <color name="transparent">#00000000</color>
-    <color name="red">#eb0029</color>
+    <color name="red">#eb0000</color>
     <color name="hint_red">#FF7272</color>
+    <color name="green">#1ABD00</color>
 
 
 </resources>

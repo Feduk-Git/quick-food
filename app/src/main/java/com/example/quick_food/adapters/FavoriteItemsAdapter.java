@@ -18,13 +18,13 @@ import com.example.quick_food.models.DishModel;
 
 import java.util.List;
 
-public class SearchItemsAdapter extends RecyclerView.Adapter<SearchItemsAdapter.SearchItemViewHolder>{
+public class FavoriteItemsAdapter extends RecyclerView.Adapter<FavoriteItemsAdapter.FavoriteItemViewHolder>{
     private final List<DishModel> items;
     private final CartListener cartListener;
     private final FavoriteListener favoriteListener;
     private final OnProductDetailsClickListener productDetailsClickListener;
 
-    public SearchItemsAdapter(List<DishModel> items, CartListener cartListener, FavoriteListener favoriteListener, OnProductDetailsClickListener productDetailsClickListener) {
+    public FavoriteItemsAdapter(List<DishModel> items, CartListener cartListener, FavoriteListener favoriteListener, OnProductDetailsClickListener productDetailsClickListener) {
         this.items = items;
         this.cartListener = cartListener;
         this.favoriteListener = favoriteListener;
@@ -33,19 +33,19 @@ public class SearchItemsAdapter extends RecyclerView.Adapter<SearchItemsAdapter.
 
     @NonNull
     @Override
-    public SearchItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new SearchItemViewHolder(
+    public FavoriteItemsAdapter.FavoriteItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        return new FavoriteItemsAdapter.FavoriteItemViewHolder(
                 LayoutInflater.from(parent.getContext()).inflate(R.layout.search_item, parent, false)) {
         };
     }
 
     @Override
-    public void onBindViewHolder(@NonNull SearchItemViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull FavoriteItemsAdapter.FavoriteItemViewHolder holder, int position) {
         holder.itemNameTV.setText(items.get(position).name);
         holder.itemDescTV.setText(items.get(position).description);
         holder.itemPriceTV.setText(String.valueOf(items.get(position).price));
 
-        if (cartListener.checkCartItemExists(items.get(position))) {
+        if (cartListener.checkCartItemExists(items.get(holder.getAdapterPosition()))) {
             holder.addToCartTV.setText("Remove");
             holder.cartImg.setImageResource(R.drawable.ic_trash_dark);
         }
@@ -54,17 +54,17 @@ public class SearchItemsAdapter extends RecyclerView.Adapter<SearchItemsAdapter.
             holder.cartImg.setImageResource(R.drawable.ic_cart2);
         }
 
-        if (favoriteListener.checkFavoriteItemExists(items.get(position)))
+        if (favoriteListener.checkFavoriteItemExists(items.get(holder.getAdapterPosition())))
             holder.favoriteButtonIV.setImageResource(R.drawable.ic_heart_filled);
         else
             holder.favoriteButtonIV.setImageResource(R.drawable.ic_heart);
 
         holder.addToCartCL.setOnClickListener(v -> {
-            if (cartListener.removeFromCart(items.get(position))) {
+            if (cartListener.removeFromCart(items.get(holder.getAdapterPosition()))) {
                 holder.addToCartTV.setText("Add to cart");
                 holder.cartImg.setImageResource(R.drawable.ic_cart2);
             }
-            else if (cartListener.addToCart(items.get(position))) {
+            else if (cartListener.addToCart(items.get(holder.getAdapterPosition()))) {
                 holder.addToCartTV.setText("Remove");
                 holder.cartImg.setImageResource(R.drawable.ic_trash_dark);
             }
@@ -73,9 +73,11 @@ public class SearchItemsAdapter extends RecyclerView.Adapter<SearchItemsAdapter.
         holder.cardCL.setOnClickListener(v -> productDetailsClickListener.onProductDetailsClick(items.get(position)));
 
         holder.favoriteButtonIV.setOnClickListener(v -> {
-            if (favoriteListener.removeFromFavorite(items.get(position)))
+            if (favoriteListener.removeFromFavorite(items.get(holder.getAdapterPosition()))) {
+                notifyItemRemoved(holder.getAdapterPosition());
                 holder.favoriteButtonIV.setImageResource(R.drawable.ic_heart);
-            else if (favoriteListener.addToFavorite(items.get(position)))
+            }
+            else if (favoriteListener.addToFavorite(items.get(holder.getAdapterPosition())))
                 holder.favoriteButtonIV.setImageResource(R.drawable.ic_heart_filled);
         });
     }
@@ -85,7 +87,7 @@ public class SearchItemsAdapter extends RecyclerView.Adapter<SearchItemsAdapter.
         return items.size();
     }
 
-    public static class SearchItemViewHolder extends RecyclerView.ViewHolder {
+    public static class FavoriteItemViewHolder extends RecyclerView.ViewHolder {
         public TextView itemNameTV;
         public TextView itemDescTV;
         public TextView itemPriceTV;
@@ -95,7 +97,7 @@ public class SearchItemsAdapter extends RecyclerView.Adapter<SearchItemsAdapter.
         public ImageView cartImg;
         public ImageView favoriteButtonIV;
 
-        public SearchItemViewHolder(@NonNull View itemView) {
+        public FavoriteItemViewHolder(@NonNull View itemView) {
             super(itemView);
             itemNameTV = itemView.findViewById(R.id.item_name__search_item);
             itemDescTV = itemView.findViewById(R.id.item_desc__search_item);
@@ -106,5 +108,9 @@ public class SearchItemsAdapter extends RecyclerView.Adapter<SearchItemsAdapter.
             cartImg = itemView.findViewById(R.id.cart_img_iv__search_item);
             favoriteButtonIV = itemView.findViewById(R.id.favorite_bt_iv__search_item);
         }
+    }
+
+    public interface OnFavoriteIsEmptyListener {
+        void onFavoriteIsEmpty();
     }
 }

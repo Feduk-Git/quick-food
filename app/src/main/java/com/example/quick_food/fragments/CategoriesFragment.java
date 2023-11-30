@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 
 import com.example.quick_food.R;
 import com.example.quick_food.adapters.CategoriesAdapter;
+import com.example.quick_food.interfaces.OnCategoryDetailsClickListener;
 import com.example.quick_food.interfaces.OnFragmentTitleChangeListener;
 import com.example.quick_food.models.CategoryModel;
 import com.example.quick_food.utils.CategoryGridSpacingDecoration;
@@ -25,6 +26,7 @@ import java.util.List;
 public class CategoriesFragment extends Fragment {
     private List<CategoryModel> categoriesList;
     private OnFragmentTitleChangeListener fragmentTitleChangeListener;
+    private OnCategoryDetailsClickListener categoryDetailsClickListener;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -33,6 +35,11 @@ public class CategoriesFragment extends Fragment {
             fragmentTitleChangeListener = (OnFragmentTitleChangeListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context + " must implement OnFragmentTitleChangeListener");
+        }
+        try {
+            categoryDetailsClickListener = (OnCategoryDetailsClickListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context + " must implement OnCategoryDetailsClickListener");
         }
     }
 
@@ -64,7 +71,7 @@ public class CategoriesFragment extends Fragment {
         RecyclerView recyclerView = view.findViewById(R.id.categories_rv__fragment_categories);
 
         // Создание адаптера и установка данных
-        CategoriesAdapter adapter = new CategoriesAdapter(categoriesList);
+        CategoriesAdapter adapter = new CategoriesAdapter(categoriesList, categoryDetailsClickListener);
         recyclerView.setAdapter(adapter);
         recyclerView.addItemDecoration(new CategoryGridSpacingDecoration(DpToPixels.convert(12, getContext()), DpToPixels.convert(26, getContext())));
     }

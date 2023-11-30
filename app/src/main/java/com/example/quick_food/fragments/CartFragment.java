@@ -18,6 +18,7 @@ import com.example.quick_food.R;
 import com.example.quick_food.adapters.CartItemsAdapter;
 import com.example.quick_food.interfaces.CartListener;
 import com.example.quick_food.interfaces.OnFragmentTitleChangeListener;
+import com.example.quick_food.interfaces.OnProductDetailsClickListener;
 import com.example.quick_food.models.CartItemModel;
 import com.example.quick_food.utils.DpToPixels;
 import com.example.quick_food.utils.SearchItemSpacingDecoration;
@@ -25,7 +26,6 @@ import com.example.quick_food.utils.SearchItemSpacingDecoration;
 import java.util.List;
 
 public class CartFragment extends Fragment implements CartItemsAdapter.OnCountChangeClickListener, CartItemsAdapter.OnItemRemoveListener, CartItemsAdapter.OnCartIsEmptyListener {
-    private View rootView;
     private List<CartItemModel> cartItems;
     private TextView totalPriceTV;
     private RecyclerView rv;
@@ -33,7 +33,8 @@ public class CartFragment extends Fragment implements CartItemsAdapter.OnCountCh
     private ConstraintLayout bottomCL;
     private CartListener cartListener;
     private OnFragmentTitleChangeListener fragmentTitleChangeListener;
-    private double totalPrice = 0;
+    private OnProductDetailsClickListener productDetailsClickListener;
+    private double totalPrice;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -48,6 +49,11 @@ public class CartFragment extends Fragment implements CartItemsAdapter.OnCountCh
         } catch (ClassCastException e) {
             throw new ClassCastException(context + " must implement OnFragmentTitleChangeListener");
         }
+        try {
+            productDetailsClickListener = (OnProductDetailsClickListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context + " must implement OnProductDetailsClickListener");
+        }
     }
 
     @Override
@@ -57,7 +63,7 @@ public class CartFragment extends Fragment implements CartItemsAdapter.OnCountCh
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        rootView = inflater.inflate(R.layout.fragment_cart, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_cart, container, false);
         totalPriceTV = rootView.findViewById(R.id.price_tv__cart_fragment);
         emptyCartCL = rootView.findViewById(R.id.empty_cart_cl__cart_fragment);
         bottomCL = rootView.findViewById(R.id.bottom_constraint__cart_fragment);
@@ -74,11 +80,12 @@ public class CartFragment extends Fragment implements CartItemsAdapter.OnCountCh
             cartIsEmptyVisibilitySet();
         }
         else {
+            totalPrice = 0;
             emptyCartCL.setVisibility(View.GONE);
             bottomCL.setVisibility(View.VISIBLE);
             rv.setVisibility(View.VISIBLE);
             for (CartItemModel cartItem: cartItems) {
-                totalPrice += cartItem.getItem().price;
+                totalPrice += cartItem.getTotalPrice();
             }
             totalPriceTV.setText(String.valueOf(Math.round(totalPrice * 100.0) / 100.0));
 
@@ -94,7 +101,7 @@ public class CartFragment extends Fragment implements CartItemsAdapter.OnCountCh
 
     public void setupRecyclerView() {
         // Создание адаптера и установка данных
-        CartItemsAdapter adapter = new CartItemsAdapter(cartItems, this, cartListener, this, this);
+        CartItemsAdapter adapter = new CartItemsAdapter(cartItems, this, cartListener, this, this, productDetailsClickListener);
         rv.setAdapter(adapter);
         rv.addItemDecoration(new SearchItemSpacingDecoration(DpToPixels.convert(12, getContext())));
     }

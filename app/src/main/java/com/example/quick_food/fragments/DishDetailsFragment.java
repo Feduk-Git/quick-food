@@ -6,26 +6,23 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.quick_food.R;
-import com.example.quick_food.activities.MainActivity;
 import com.example.quick_food.adapters.DishImgViewPagerAdapter;
 import com.example.quick_food.interfaces.CartListener;
+import com.example.quick_food.interfaces.FavoriteListener;
 import com.example.quick_food.interfaces.OnFragmentTitleChangeListener;
 import com.example.quick_food.models.DishModel;
 import com.example.quick_food.utils.DpToPixels;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,10 +33,16 @@ public class DishDetailsFragment extends Fragment {
     private DishModel item;
     private CartListener cartListener;
     private OnFragmentTitleChangeListener fragmentTitleChangeListener;
+    private FavoriteListener favoriteListener;
 
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
+        try {
+            favoriteListener = (FavoriteListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context + " must implement FavoriteListener");
+        }
         try {
             cartListener = (CartListener) context;
         } catch (ClassCastException e) {
@@ -68,15 +71,40 @@ public class DishDetailsFragment extends Fragment {
         TextView descTV = view.findViewById(R.id.dish_desc__dish_details_fragment);
         TextView priceTV = view.findViewById(R.id.price_tv__dish_details_fragment);
         Button addToCartBT = view.findViewById(R.id.add_to_cart_bt__dish_details_fragment);
+        ImageView favoriteButtonIV = view.findViewById(R.id.favorite_bt_iv__dish_details_fragment);
 
         nameTV.setText(item.name);
         descTV.setText(item.description);
         priceTV.setText(String.valueOf(item.price));
 
-        addToCartBT.setOnClickListener(v -> cartListener.addToCart(item));
+        if (cartListener.checkCartItemExists(item))
+            addToCartBT.setText("Remove from cart");
+        else
+            addToCartBT.setText("Add to cart");
+
+        addToCartBT.setOnClickListener(v -> {
+            if (cartListener.removeFromCart(item)) {
+                addToCartBT.setText("Add to cart");
+            }
+            else if (cartListener.addToCart(item)) {
+                addToCartBT.setText("Remove from cart");
+            }
+        });
 
         setupViewPager(view);
         setupDots(imgList.size(), view);
+
+        if (favoriteListener.checkFavoriteItemExists(item))
+            favoriteButtonIV.setImageResource(R.drawable.ic_heart_filled);
+        else
+            favoriteButtonIV.setImageResource(R.drawable.ic_heart);
+
+        favoriteButtonIV.setOnClickListener(v -> {
+            if (favoriteListener.removeFromFavorite(item))
+                favoriteButtonIV.setImageResource(R.drawable.ic_heart);
+            else if (favoriteListener.addToFavorite(item))
+                favoriteButtonIV.setImageResource(R.drawable.ic_heart_filled);
+        });
     }
 
     @Override

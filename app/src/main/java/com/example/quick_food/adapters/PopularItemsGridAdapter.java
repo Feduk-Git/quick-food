@@ -26,7 +26,7 @@ import java.util.List;
 public class PopularItemsGridAdapter extends RecyclerView.Adapter<PopularItemsGridAdapter.PopularItemGridViewHolder> {
     private final List<DishModel> items;
     private final Context context;
-    private OnProductDetailsClickListener productDetailsClickListener;
+    private final OnProductDetailsClickListener productDetailsClickListener;
 
     public PopularItemsGridAdapter(List<DishModel> items, Context context, OnProductDetailsClickListener productDetailsClickListener) {
         this.items = items;
