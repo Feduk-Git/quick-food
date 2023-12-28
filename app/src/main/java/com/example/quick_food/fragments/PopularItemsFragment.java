@@ -14,14 +14,15 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.quick_food.R;
+import com.example.quick_food.ServerConnection;
 import com.example.quick_food.activities.MainActivity;
 import com.example.quick_food.adapters.CategoriesAdapter;
 import com.example.quick_food.adapters.PopularItemsGridAdapter;
 import com.example.quick_food.interfaces.OnCategoryDetailsClickListener;
 import com.example.quick_food.interfaces.OnFragmentTitleChangeListener;
 import com.example.quick_food.interfaces.OnProductDetailsClickListener;
-import com.example.quick_food.models.CategoryModel;
-import com.example.quick_food.models.DishModel;
+import com.example.quick_food.models.Category;
+import com.example.quick_food.models.Product;
 import com.example.quick_food.utils.DpToPixels;
 import com.example.quick_food.utils.PopularItemGridSpacingDecoration;
 import com.example.quick_food.utils.PopularItemSpacingDecoration;
@@ -30,8 +31,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PopularItemsFragment extends Fragment {
-    private List<CategoryModel> popularCategoriesList;
-    private List<DishModel> itemsList;
+    private List<Category> popularCategoriesList;
+    private List<Product> popularProductsList;
     private OnProductDetailsClickListener productDetailsClickListener;
     private OnFragmentTitleChangeListener fragmentTitleChangeListener;
     private OnCategoryDetailsClickListener categoryDetailsClickListener;
@@ -58,8 +59,6 @@ public class PopularItemsFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_popular_items, container, false);
     }
 
@@ -76,18 +75,14 @@ public class PopularItemsFragment extends Fragment {
             }
         });
 
-        popularCategoriesList = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
-            popularCategoriesList.add(new CategoryModel("Category" + (i + 1), ""));
-        }
-
-        itemsList = new ArrayList<>();
-        for (int i = 0; i < 11; i++) {
-            itemsList.add(new DishModel("", "item" + (i + 1), "testDesc"));
-        }
-
-        setupCategoriesRecyclerView(view);
-        setupItemsRecyclerView(view);
+        new Thread(() -> {
+            popularProductsList = ServerConnection.getInstance().getPopularProducts(12);
+            popularCategoriesList = ServerConnection.getInstance().getPopularCategories(5);
+            getActivity().runOnUiThread(() -> {
+                setupPopularItemsRecyclerView(view);
+                setupCategoriesRecyclerView(view);
+            });
+        }).start();
     }
 
     @Override
@@ -102,15 +97,15 @@ public class PopularItemsFragment extends Fragment {
         // Создание адаптера и установка данных
         CategoriesAdapter adapter = new CategoriesAdapter(popularCategoriesList, categoryDetailsClickListener);
         recyclerView.setAdapter(adapter);
-        recyclerView.addItemDecoration(new PopularItemSpacingDecoration(DpToPixels.convert(12, getContext()), DpToPixels.convert(26, getContext())));
+        recyclerView.addItemDecoration(new PopularItemSpacingDecoration(DpToPixels.convert(12, requireActivity()), DpToPixels.convert(26, requireActivity())));
     }
 
-    private void setupItemsRecyclerView(View view) {
+    private void setupPopularItemsRecyclerView(View view) {
         RecyclerView recyclerView = view.findViewById(R.id.popular_items_rv__fragment_popular_items);
 
         // Создание адаптера и установка данных
-        PopularItemsGridAdapter adapter = new PopularItemsGridAdapter(itemsList, getContext(), productDetailsClickListener);
+        PopularItemsGridAdapter adapter = new PopularItemsGridAdapter(popularProductsList, requireActivity(), productDetailsClickListener);
         recyclerView.setAdapter(adapter);
-        recyclerView.addItemDecoration(new PopularItemGridSpacingDecoration(DpToPixels.convert(10, getContext()), DpToPixels.convert(20, getContext())));
+        recyclerView.addItemDecoration(new PopularItemGridSpacingDecoration(DpToPixels.convert(10, requireActivity()), DpToPixels.convert(20, requireActivity())));
     }
 }

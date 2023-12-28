@@ -16,12 +16,14 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.quick_food.QuickFoodApplication;
 import com.example.quick_food.R;
 import com.example.quick_food.adapters.DishImgViewPagerAdapter;
 import com.example.quick_food.interfaces.CartListener;
 import com.example.quick_food.interfaces.FavoriteListener;
 import com.example.quick_food.interfaces.OnFragmentTitleChangeListener;
-import com.example.quick_food.models.DishModel;
+import com.example.quick_food.models.Product;
+import com.example.quick_food.models.SharedViewModel;
 import com.example.quick_food.utils.DpToPixels;
 
 import java.util.ArrayList;
@@ -30,10 +32,11 @@ import java.util.List;
 public class DishDetailsFragment extends Fragment {
     private LinearLayout ll;
     private List<String> imgList;
-    private DishModel item;
+    private Product item;
     private CartListener cartListener;
     private OnFragmentTitleChangeListener fragmentTitleChangeListener;
     private FavoriteListener favoriteListener;
+    private SharedViewModel sharedVM;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -53,6 +56,13 @@ public class DishDetailsFragment extends Fragment {
         } catch (ClassCastException e) {
             throw new ClassCastException(context + " must implement OnFragmentTitleChangeListener");
         }
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        sharedVM = ((QuickFoodApplication)requireActivity().getApplication()).getSharedViewModel();
     }
 
     @Override
@@ -77,7 +87,7 @@ public class DishDetailsFragment extends Fragment {
         descTV.setText(item.description);
         priceTV.setText(String.valueOf(item.price));
 
-        if (cartListener.checkCartItemExists(item))
+        if (sharedVM.checkCartItemExists(item))
             addToCartBT.setText("Remove from cart");
         else
             addToCartBT.setText("Add to cart");
@@ -94,7 +104,7 @@ public class DishDetailsFragment extends Fragment {
         setupViewPager(view);
         setupDots(imgList.size(), view);
 
-        if (favoriteListener.checkFavoriteItemExists(item))
+        if (sharedVM.checkFavoriteItemExists(item))
             favoriteButtonIV.setImageResource(R.drawable.ic_heart_filled);
         else
             favoriteButtonIV.setImageResource(R.drawable.ic_heart);
@@ -113,18 +123,15 @@ public class DishDetailsFragment extends Fragment {
         fragmentTitleChangeListener.onTitleChanged("Details");
     }
 
-    public void setDishModel(DishModel item) {
+    public void setDishModel(Product item) {
         this.item = item;
     }
 
     private void setupViewPager(View view) {
         imgList = new ArrayList<>();
+        imgList.add("");
 
-        for (int i = 0; i < 4; i++) {
-            imgList.add("");
-        }
-
-        DishImgViewPagerAdapter adapter = new DishImgViewPagerAdapter(imgList);
+        DishImgViewPagerAdapter adapter = new DishImgViewPagerAdapter(item.id, imgList);
         ViewPager2 viewPager2 = view.findViewById(R.id.dish_img_vp__dish_details_fragment);
 
         viewPager2.setAdapter(adapter);

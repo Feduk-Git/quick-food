@@ -12,33 +12,50 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.quick_food.QuickFoodApplication;
 import com.example.quick_food.R;
 import com.example.quick_food.adapters.CartItemsAdapter;
 import com.example.quick_food.interfaces.CartListener;
 import com.example.quick_food.interfaces.OnFragmentTitleChangeListener;
 import com.example.quick_food.interfaces.OnProductDetailsClickListener;
-import com.example.quick_food.models.CartItemModel;
+import com.example.quick_food.interfaces.OrderListener;
+import com.example.quick_food.models.CartItem;
+import com.example.quick_food.models.SharedViewModel;
 import com.example.quick_food.utils.DpToPixels;
 import com.example.quick_food.utils.SearchItemSpacingDecoration;
 
 import java.util.List;
 
 public class CartFragment extends Fragment implements CartItemsAdapter.OnCountChangeClickListener, CartItemsAdapter.OnItemRemoveListener, CartItemsAdapter.OnCartIsEmptyListener {
-    private List<CartItemModel> cartItems;
+    private List<CartItem> cartItems;
     private TextView totalPriceTV;
     private RecyclerView rv;
     private ConstraintLayout emptyCartCL;
     private ConstraintLayout bottomCL;
     private CartListener cartListener;
+    private OrderListener orderListener;
+    private CartItemsAdapter.OnCountChangeClickListener countChangeClickListenerListener;
     private OnFragmentTitleChangeListener fragmentTitleChangeListener;
     private OnProductDetailsClickListener productDetailsClickListener;
     private double totalPrice;
+    private SharedViewModel sharedVM;
 
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
+        try {
+            countChangeClickListenerListener = (CartItemsAdapter.OnCountChangeClickListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context + " must implement CartItemsAdapter.OnCountChangeClickListener");
+        }
+        try {
+            orderListener = (OrderListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context + " must implement OrderListener");
+        }
         try {
             cartListener = (CartListener) context;
         } catch (ClassCastException e) {
@@ -59,6 +76,7 @@ public class CartFragment extends Fragment implements CartItemsAdapter.OnCountCh
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        sharedVM = ((QuickFoodApplication)requireActivity().getApplication()).getSharedViewModel();
     }
 
     @Override
@@ -74,7 +92,7 @@ public class CartFragment extends Fragment implements CartItemsAdapter.OnCountCh
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        cartItems = cartListener.getCartItems();
+        cartItems = sharedVM.getCartItems();
 
         if (cartItems == null || cartItems.isEmpty()) {
             cartIsEmptyVisibilitySet();
@@ -84,12 +102,15 @@ public class CartFragment extends Fragment implements CartItemsAdapter.OnCountCh
             emptyCartCL.setVisibility(View.GONE);
             bottomCL.setVisibility(View.VISIBLE);
             rv.setVisibility(View.VISIBLE);
-            for (CartItemModel cartItem: cartItems) {
+            for (CartItem cartItem: cartItems) {
                 totalPrice += cartItem.getTotalPrice();
             }
             totalPriceTV.setText(String.valueOf(Math.round(totalPrice * 100.0) / 100.0));
 
             setupRecyclerView();
+
+            Button orderNowBt = view.findViewById(R.id.order_now_bt__cart_fragment);
+            orderNowBt.setOnClickListener(v -> orderListener.orderConfirmation());
         }
     }
 
@@ -97,24 +118,30 @@ public class CartFragment extends Fragment implements CartItemsAdapter.OnCountCh
     public void onResume() {
         super.onResume();
         fragmentTitleChangeListener.onTitleChanged("Cart");
+        cartItems = sharedVM.getCartItems();
+        if (cartItems == null || cartItems.isEmpty()) {
+            cartIsEmptyVisibilitySet();
+        }
     }
 
     public void setupRecyclerView() {
         // Создание адаптера и установка данных
-        CartItemsAdapter adapter = new CartItemsAdapter(cartItems, this, cartListener, this, this, productDetailsClickListener);
+        CartItemsAdapter adapter = new CartItemsAdapter(cartItems,  cartListener, this, this, productDetailsClickListener);
+        adapter.addCountChangeClickListener(this);
+        adapter.addCountChangeClickListener(countChangeClickListenerListener);
         rv.setAdapter(adapter);
-        rv.addItemDecoration(new SearchItemSpacingDecoration(DpToPixels.convert(12, getContext())));
+        rv.addItemDecoration(new SearchItemSpacingDecoration(DpToPixels.convert(12, requireActivity())));
     }
 
     @Override
     public void onIncreaseCountClicked(int position) {
-        totalPrice += cartItems.get(position).getItem().price;
+        totalPrice += cartItems.get(position).getProduct().price;
         totalPriceTV.setText(String.valueOf(Math.round(totalPrice * 100.0) / 100.0));
     }
 
     @Override
     public void onDecreaseCountClicked(int position) {
-        totalPrice -= cartItems.get(position).getItem().price;
+        totalPrice -= cartItems.get(position).getProduct().price;
         totalPriceTV.setText(String.valueOf(Math.round(totalPrice * 100.0) / 100.0));
     }
 

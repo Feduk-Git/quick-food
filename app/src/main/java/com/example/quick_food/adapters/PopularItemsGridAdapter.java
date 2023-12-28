@@ -2,6 +2,7 @@ package com.example.quick_food.adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.BitmapFactory;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,23 +13,22 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quick_food.R;
-import com.example.quick_food.activities.MainActivity;
-import com.example.quick_food.fragments.DishDetailsFragment;
+import com.example.quick_food.ServerConnection;
 import com.example.quick_food.interfaces.OnProductDetailsClickListener;
-import com.example.quick_food.models.DishModel;
+import com.example.quick_food.models.Product;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
 public class PopularItemsGridAdapter extends RecyclerView.Adapter<PopularItemsGridAdapter.PopularItemGridViewHolder> {
-    private final List<DishModel> items;
+    private final List<Product> items;
     private final Context context;
     private final OnProductDetailsClickListener productDetailsClickListener;
 
-    public PopularItemsGridAdapter(List<DishModel> items, Context context, OnProductDetailsClickListener productDetailsClickListener) {
+    public PopularItemsGridAdapter(List<Product> items, Context context, OnProductDetailsClickListener productDetailsClickListener) {
         this.items = items;
         this.context = context;
         this.productDetailsClickListener = productDetailsClickListener;
@@ -45,14 +45,18 @@ public class PopularItemsGridAdapter extends RecyclerView.Adapter<PopularItemsGr
     @SuppressLint("ResourceAsColor")
     @Override
     public void onBindViewHolder(@NonNull PopularItemGridViewHolder holder, int position) {
+        Product product = items.get(position);
         ViewGroup.LayoutParams layoutParams = holder.itemImage.getLayoutParams();
         int screenWidth = getScreenWidth();
         layoutParams.width = (screenWidth * 27) / 100;
         layoutParams.height = layoutParams.width;
         holder.itemImage.setLayoutParams(layoutParams);
-        holder.itemNameTV.setText(items.get(position).name);
 
-        holder.rootCL.setOnClickListener(v -> productDetailsClickListener.onProductDetailsClick(items.get(position)));
+        Picasso.get().load(ServerConnection.getInstance().host + "api/image/get_product_image/" + product.id).into(holder.itemImage);
+
+        holder.itemNameTV.setText(product.name);
+
+        holder.rootCL.setOnClickListener(v -> productDetailsClickListener.onProductDetailsClick(product));
     }
 
     @Override

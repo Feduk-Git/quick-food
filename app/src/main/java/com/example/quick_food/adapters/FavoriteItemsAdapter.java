@@ -11,24 +11,30 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quick_food.R;
+import com.example.quick_food.ServerConnection;
 import com.example.quick_food.interfaces.CartListener;
 import com.example.quick_food.interfaces.FavoriteListener;
 import com.example.quick_food.interfaces.OnProductDetailsClickListener;
-import com.example.quick_food.models.DishModel;
+import com.example.quick_food.models.Product;
+import com.example.quick_food.models.SharedViewModel;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
 public class FavoriteItemsAdapter extends RecyclerView.Adapter<FavoriteItemsAdapter.FavoriteItemViewHolder>{
-    private final List<DishModel> items;
+    private final List<Product> items;
     private final CartListener cartListener;
     private final FavoriteListener favoriteListener;
     private final OnProductDetailsClickListener productDetailsClickListener;
+    private final SharedViewModel sharedVM;
 
-    public FavoriteItemsAdapter(List<DishModel> items, CartListener cartListener, FavoriteListener favoriteListener, OnProductDetailsClickListener productDetailsClickListener) {
+    public FavoriteItemsAdapter(List<Product> items, CartListener cartListener, FavoriteListener favoriteListener,
+                                OnProductDetailsClickListener productDetailsClickListener, SharedViewModel sharedVM) {
         this.items = items;
         this.cartListener = cartListener;
         this.favoriteListener = favoriteListener;
         this.productDetailsClickListener = productDetailsClickListener;
+        this.sharedVM = sharedVM;
     }
 
     @NonNull
@@ -41,11 +47,14 @@ public class FavoriteItemsAdapter extends RecyclerView.Adapter<FavoriteItemsAdap
 
     @Override
     public void onBindViewHolder(@NonNull FavoriteItemsAdapter.FavoriteItemViewHolder holder, int position) {
-        holder.itemNameTV.setText(items.get(position).name);
-        holder.itemDescTV.setText(items.get(position).description);
-        holder.itemPriceTV.setText(String.valueOf(items.get(position).price));
+        Product product = items.get(position);
+        holder.itemNameTV.setText(product.name);
+        holder.itemDescTV.setText(product.description);
+        holder.itemPriceTV.setText(String.valueOf(product.price));
 
-        if (cartListener.checkCartItemExists(items.get(holder.getAdapterPosition()))) {
+        Picasso.get().load(ServerConnection.getInstance().host + "api/image/get_product_image/" + product.id).into(holder.productImg);
+
+        if (sharedVM.checkCartItemExists(items.get(holder.getAdapterPosition()))) {
             holder.addToCartTV.setText("Remove");
             holder.cartImg.setImageResource(R.drawable.ic_trash_dark);
         }
@@ -54,7 +63,7 @@ public class FavoriteItemsAdapter extends RecyclerView.Adapter<FavoriteItemsAdap
             holder.cartImg.setImageResource(R.drawable.ic_cart2);
         }
 
-        if (favoriteListener.checkFavoriteItemExists(items.get(holder.getAdapterPosition())))
+        if (sharedVM.checkFavoriteItemExists(items.get(holder.getAdapterPosition())))
             holder.favoriteButtonIV.setImageResource(R.drawable.ic_heart_filled);
         else
             holder.favoriteButtonIV.setImageResource(R.drawable.ic_heart);
@@ -70,7 +79,7 @@ public class FavoriteItemsAdapter extends RecyclerView.Adapter<FavoriteItemsAdap
             }
         });
 
-        holder.cardCL.setOnClickListener(v -> productDetailsClickListener.onProductDetailsClick(items.get(position)));
+        holder.cardCL.setOnClickListener(v -> productDetailsClickListener.onProductDetailsClick(product));
 
         holder.favoriteButtonIV.setOnClickListener(v -> {
             if (favoriteListener.removeFromFavorite(items.get(holder.getAdapterPosition()))) {
@@ -96,6 +105,7 @@ public class FavoriteItemsAdapter extends RecyclerView.Adapter<FavoriteItemsAdap
         public ConstraintLayout addToCartCL;
         public ImageView cartImg;
         public ImageView favoriteButtonIV;
+        public ImageView productImg;
 
         public FavoriteItemViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -107,6 +117,7 @@ public class FavoriteItemsAdapter extends RecyclerView.Adapter<FavoriteItemsAdap
             addToCartCL = itemView.findViewById(R.id.add_to_cart_cl__search_item);
             cartImg = itemView.findViewById(R.id.cart_img_iv__search_item);
             favoriteButtonIV = itemView.findViewById(R.id.favorite_bt_iv__search_item);
+            productImg = itemView.findViewById(R.id.item_image_iv__search_item);
         }
     }
 

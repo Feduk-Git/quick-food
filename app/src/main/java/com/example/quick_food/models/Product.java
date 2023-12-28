@@ -5,21 +5,25 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
-public class DishModel implements Parcelable {
-    public String imageURL;
+import java.util.List;
+
+public class Product implements Parcelable {
+    public int id;
     public String name;
     public String description;
     public double price;
 
-    public DishModel (String imageURL, String name, String description) {
-        this.imageURL = imageURL;
+    public Product() {}
+
+    public Product(int id, String name, String description, double price) {
+        this.id = id;
         this.name = name;
         this.description = description;
-        price = 10.99;
+        this.price = price;
     }
 
-    protected DishModel(Parcel in) {
-        imageURL = in.readString();
+    protected Product(Parcel in) {
+        id = in.readInt();
         name = in.readString();
         description = in.readString();
         price = in.readDouble();
@@ -32,21 +36,21 @@ public class DishModel implements Parcelable {
 
     @Override
     public void writeToParcel(@NonNull Parcel dest, int flags) {
-        dest.writeString(imageURL);
+        dest.writeInt(id);
         dest.writeString(name);
         dest.writeString(description);
         dest.writeDouble(price);
     }
 
-    public static final Creator<DishModel> CREATOR = new Creator<DishModel>() {
+    public static final Creator<Product> CREATOR = new Creator<Product>() {
         @Override
-        public DishModel createFromParcel(Parcel in) {
-            return new DishModel(in);
+        public Product createFromParcel(Parcel in) {
+            return new Product(in);
         }
 
         @Override
-        public DishModel[] newArray(int size) {
-            return new DishModel[size];
+        public Product[] newArray(int size) {
+            return new Product[size];
         }
     };
 }

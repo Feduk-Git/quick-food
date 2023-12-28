@@ -13,13 +13,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.quick_food.QuickFoodApplication;
 import com.example.quick_food.R;
+import com.example.quick_food.ServerConnection;
 import com.example.quick_food.adapters.SearchItemsAdapter;
 import com.example.quick_food.interfaces.CartListener;
 import com.example.quick_food.interfaces.FavoriteListener;
 import com.example.quick_food.interfaces.OnFragmentTitleChangeListener;
 import com.example.quick_food.interfaces.OnProductDetailsClickListener;
-import com.example.quick_food.models.DishModel;
+import com.example.quick_food.models.Product;
+import com.example.quick_food.models.SharedViewModel;
 import com.example.quick_food.utils.DpToPixels;
 import com.example.quick_food.utils.SearchItemSpacingDecoration;
 
@@ -27,13 +30,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SearchFragment extends Fragment {
-    private List<DishModel> itemsList;
+    private List<Product> itemsList;
     private RecyclerView recyclerView;
     private CartListener cartListener;
     private OnProductDetailsClickListener productDetailsClickListener;
     private OnFragmentTitleChangeListener fragmentTitleChangeListener;
     private FavoriteListener favoriteListener;
     private String searchString;
+    private SharedViewModel sharedVM;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -63,6 +67,8 @@ public class SearchFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        sharedVM = ((QuickFoodApplication)requireActivity().getApplication()).getSharedViewModel();
     }
 
     @Override
@@ -75,19 +81,17 @@ public class SearchFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        itemsList = new ArrayList<>();
-        itemsList.add(new DishModel("", "Margherita Regular 12x12”", "Get extra toppings free"));
-        itemsList.add(new DishModel("", "House Special Pizza", "Sausage, Mushrooms, Olives, Pepperoni, Green Peppers, Onions"));
-        itemsList.add(new DishModel("", "Vegetarian Pizza", "Broccoli, Mushrooms, Olives, Green Peppers"));
-
-        for (int i = 0; i < 7; i++) {
-            itemsList.add(new DishModel("", "item " + i, "desc " + i));
-        }
-
         TextView countFoundItemsTV = view.findViewById(R.id.count_found_items_tv__search_fragment);
-        countFoundItemsTV.setText("Found " + itemsList.size() + " items for \"" + searchString + "\"");
-        setupSearchItemsRecyclerView(view);
+
+        new Thread(() -> {
+            itemsList = ServerConnection.getInstance().getProductsSearch(searchString);
+            getActivity().runOnUiThread(() -> {
+                countFoundItemsTV.setText("Found " + itemsList.size() + " items for \"" + searchString + "\"");
+                setupSearchItemsRecyclerView(view);
+            });
+        }).start();
+
+
     }
 
     @Override
@@ -102,8 +106,8 @@ public class SearchFragment extends Fragment {
 
     private void setupSearchItemsRecyclerView(View view) {
         // Создание адаптера и установка данных
-        SearchItemsAdapter adapter = new SearchItemsAdapter(itemsList, cartListener, favoriteListener, productDetailsClickListener);
+        SearchItemsAdapter adapter = new SearchItemsAdapter(itemsList, cartListener, favoriteListener, productDetailsClickListener, sharedVM);
         recyclerView.setAdapter(adapter);
-        recyclerView.addItemDecoration(new SearchItemSpacingDecoration(DpToPixels.convert(12, getContext())));
+        recyclerView.addItemDecoration(new SearchItemSpacingDecoration(DpToPixels.convert(12, requireActivity())));
     }
 }

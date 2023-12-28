@@ -11,24 +11,30 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quick_food.R;
+import com.example.quick_food.ServerConnection;
 import com.example.quick_food.interfaces.CartListener;
 import com.example.quick_food.interfaces.FavoriteListener;
 import com.example.quick_food.interfaces.OnProductDetailsClickListener;
-import com.example.quick_food.models.DishModel;
+import com.example.quick_food.models.Product;
+import com.example.quick_food.models.SharedViewModel;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
 public class SearchItemsAdapter extends RecyclerView.Adapter<SearchItemsAdapter.SearchItemViewHolder>{
-    private final List<DishModel> items;
+    private final List<Product> items;
     private final CartListener cartListener;
     private final FavoriteListener favoriteListener;
     private final OnProductDetailsClickListener productDetailsClickListener;
+    private final SharedViewModel sharedVM;
 
-    public SearchItemsAdapter(List<DishModel> items, CartListener cartListener, FavoriteListener favoriteListener, OnProductDetailsClickListener productDetailsClickListener) {
+    public SearchItemsAdapter(List<Product> items, CartListener cartListener, FavoriteListener favoriteListener,
+                              OnProductDetailsClickListener productDetailsClickListener, SharedViewModel sharedVM) {
         this.items = items;
         this.cartListener = cartListener;
         this.favoriteListener = favoriteListener;
         this.productDetailsClickListener = productDetailsClickListener;
+        this.sharedVM = sharedVM;
     }
 
     @NonNull
@@ -41,11 +47,13 @@ public class SearchItemsAdapter extends RecyclerView.Adapter<SearchItemsAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull SearchItemViewHolder holder, int position) {
-        holder.itemNameTV.setText(items.get(position).name);
-        holder.itemDescTV.setText(items.get(position).description);
-        holder.itemPriceTV.setText(String.valueOf(items.get(position).price));
+        Product product = items.get(position);
+        holder.itemNameTV.setText(product.name);
+        holder.itemDescTV.setText(product.description);
+        holder.itemPriceTV.setText(String.valueOf(product.price));
+        Picasso.get().load(ServerConnection.getInstance().host + "api/image/get_product_image/" + product.id).into(holder.productImg);
 
-        if (cartListener.checkCartItemExists(items.get(position))) {
+        if (sharedVM.checkCartItemExists(product)) {
             holder.addToCartTV.setText("Remove");
             holder.cartImg.setImageResource(R.drawable.ic_trash_dark);
         }
@@ -54,28 +62,28 @@ public class SearchItemsAdapter extends RecyclerView.Adapter<SearchItemsAdapter.
             holder.cartImg.setImageResource(R.drawable.ic_cart2);
         }
 
-        if (favoriteListener.checkFavoriteItemExists(items.get(position)))
+        if (sharedVM.checkFavoriteItemExists(product))
             holder.favoriteButtonIV.setImageResource(R.drawable.ic_heart_filled);
         else
             holder.favoriteButtonIV.setImageResource(R.drawable.ic_heart);
 
         holder.addToCartCL.setOnClickListener(v -> {
-            if (cartListener.removeFromCart(items.get(position))) {
+            if (cartListener.removeFromCart(product)) {
                 holder.addToCartTV.setText("Add to cart");
                 holder.cartImg.setImageResource(R.drawable.ic_cart2);
             }
-            else if (cartListener.addToCart(items.get(position))) {
+            else if (cartListener.addToCart(product)) {
                 holder.addToCartTV.setText("Remove");
                 holder.cartImg.setImageResource(R.drawable.ic_trash_dark);
             }
         });
 
-        holder.cardCL.setOnClickListener(v -> productDetailsClickListener.onProductDetailsClick(items.get(position)));
+        holder.cardCL.setOnClickListener(v -> productDetailsClickListener.onProductDetailsClick(product));
 
         holder.favoriteButtonIV.setOnClickListener(v -> {
-            if (favoriteListener.removeFromFavorite(items.get(position)))
+            if (favoriteListener.removeFromFavorite(product))
                 holder.favoriteButtonIV.setImageResource(R.drawable.ic_heart);
-            else if (favoriteListener.addToFavorite(items.get(position)))
+            else if (favoriteListener.addToFavorite(product))
                 holder.favoriteButtonIV.setImageResource(R.drawable.ic_heart_filled);
         });
     }
@@ -94,6 +102,7 @@ public class SearchItemsAdapter extends RecyclerView.Adapter<SearchItemsAdapter.
         public ConstraintLayout addToCartCL;
         public ImageView cartImg;
         public ImageView favoriteButtonIV;
+        public ImageView productImg;
 
         public SearchItemViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -105,6 +114,7 @@ public class SearchItemsAdapter extends RecyclerView.Adapter<SearchItemsAdapter.
             addToCartCL = itemView.findViewById(R.id.add_to_cart_cl__search_item);
             cartImg = itemView.findViewById(R.id.cart_img_iv__search_item);
             favoriteButtonIV = itemView.findViewById(R.id.favorite_bt_iv__search_item);
+            productImg = itemView.findViewById(R.id.item_image_iv__search_item);
         }
     }
 }

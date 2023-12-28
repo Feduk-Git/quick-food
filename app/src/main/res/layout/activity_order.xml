@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".activities.OrderActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/bg_header_cl__activity_order"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:background="@drawable/main_bg_shape"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/back_button_iv__activity_order"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="26dp"
+            android:paddingVertical="32dp"
+            android:src="@drawable/ic_left_arrow"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/inter_bold"
+            android:text="Your order"
+            android:textColor="@color/white"
+            android:textSize="24sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/name_til__activity_order"
+        style="@style/CustomOutlineBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="26dp"
+        android:layout_marginTop="30dp"
+        android:hint="Name"
+        app:counterEnabled="true"
+        app:counterMaxLength="50"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/bg_header_cl__activity_order">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/name_tiet__activity_order"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/inter_regular"
+            android:maxLength="50"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/surname_til__activity_order"
+        style="@style/CustomOutlineBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="26dp"
+        android:layout_marginTop="14dp"
+        android:hint="Surname"
+        app:counterEnabled="true"
+        app:counterMaxLength="50"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/name_til__activity_order">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/surname_tiet__activity_order"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/inter_regular"
+            android:maxLength="50"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/city_til__activity_order"
+        style="@style/CustomOutlineBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="26dp"
+        android:layout_marginTop="14dp"
+        android:hint="City"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/surname_til__activity_order">
+
+        <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+            android:id="@+id/city_actv__activity_order"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:completionThreshold="1"
+            android:fontFamily="@font/inter_regular"
+            android:inputType="none"
+            android:padding="17dp"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/address_til__activity_order"
+        style="@style/CustomOutlineBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="26dp"
+        android:layout_marginTop="14dp"
+        android:hint="Delivery address"
+        app:counterEnabled="true"
+        app:counterMaxLength="80"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/city_til__activity_order">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/address_tiet__activity_order"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/inter_regular"
+            android:maxLength="80"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/phone_number_til__activity_order"
+        style="@style/CustomOutlineBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="26dp"
+        android:layout_marginTop="14dp"
+        android:hint="Phone number"
+        app:counterEnabled="true"
+        app:counterMaxLength="9"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/address_til__activity_order"
+        app:prefixText="+380"
+        app:prefixTextAppearance="@style/PrefixText"
+        app:prefixTextColor="@color/accent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/phone_number_tiet__activity_order"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/inter_regular"
+            android:inputType="number"
+            android:maxLength="9"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/description__til__activity_order"
+        style="@style/CustomOutlineBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="26dp"
+        android:layout_marginTop="14dp"
+        android:hint="Description (Optional)"
+        app:counterEnabled="true"
+        app:counterMaxLength="200"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/phone_number_til__activity_order">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/description_tiet__activity_order"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/inter_regular"
+            android:maxLength="200"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/bottom_constraint__activity_order"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/elevation_bg"
+        android:elevation="15dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="26dp"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:fontFamily="@font/inter_regular"
+                android:letterSpacing="0.2"
+                android:text="total price"
+                android:textAllCaps="true"
+                android:textColor="@color/black"
+                android:textSize="10sp" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/price_symb_tv__activity_order"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/inter_regular"
+                    android:text="$"
+                    android:textColor="@color/accent"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/price_tv__activity_order"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:fontFamily="@font/inter_regular"
+                    android:text="23.00"
+                    android:textColor="@color/accent"
+                    android:textSize="20sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/confirm_order_bt__activity_order"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="22dp"
+            android:layout_marginEnd="26dp"
+            android:background="@drawable/custom_button"
+            android:fontFamily="@font/inter_bold"
+            android:minHeight="0dp"
+            android:paddingHorizontal="30dp"
+            android:paddingVertical="13dp"
+            android:text="Confirm order"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    \
+</androidx.constraintlayout.widget.ConstraintLayout>

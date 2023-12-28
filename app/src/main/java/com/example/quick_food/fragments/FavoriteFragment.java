@@ -13,27 +13,29 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.quick_food.QuickFoodApplication;
 import com.example.quick_food.R;
 import com.example.quick_food.adapters.FavoriteItemsAdapter;
-import com.example.quick_food.adapters.SearchItemsAdapter;
 import com.example.quick_food.interfaces.CartListener;
 import com.example.quick_food.interfaces.FavoriteListener;
 import com.example.quick_food.interfaces.OnFragmentTitleChangeListener;
 import com.example.quick_food.interfaces.OnProductDetailsClickListener;
-import com.example.quick_food.models.DishModel;
+import com.example.quick_food.models.Product;
+import com.example.quick_food.models.SharedViewModel;
 import com.example.quick_food.utils.DpToPixels;
 import com.example.quick_food.utils.SearchItemSpacingDecoration;
 
 import java.util.List;
 
 public class FavoriteFragment extends Fragment implements FavoriteItemsAdapter.OnFavoriteIsEmptyListener {
-    private List<DishModel> itemsList;
+    private List<Product> itemsList;
     private RecyclerView recyclerView;
     private TextView favoriteIsEmptyTV;
     private CartListener cartListener;
     private OnProductDetailsClickListener productDetailsClickListener;
     private OnFragmentTitleChangeListener fragmentTitleChangeListener;
     private FavoriteListener favoriteListener;
+    private SharedViewModel sharedVM;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -63,6 +65,8 @@ public class FavoriteFragment extends Fragment implements FavoriteItemsAdapter.O
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        sharedVM = ((QuickFoodApplication)requireActivity().getApplication()).getSharedViewModel();
     }
 
     @Override
@@ -77,7 +81,7 @@ public class FavoriteFragment extends Fragment implements FavoriteItemsAdapter.O
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        itemsList = favoriteListener.getFavoriteList();
+        itemsList = sharedVM.getFavoriteList();
 
         if (itemsList == null || itemsList.isEmpty()) {
             favoriteIsEmptyVisibilitySet();
@@ -103,9 +107,9 @@ public class FavoriteFragment extends Fragment implements FavoriteItemsAdapter.O
 
     private void setupSearchItemsRecyclerView() {
         // Создание адаптера и установка данных
-        FavoriteItemsAdapter adapter = new FavoriteItemsAdapter(itemsList, cartListener, favoriteListener, productDetailsClickListener);
+        FavoriteItemsAdapter adapter = new FavoriteItemsAdapter(itemsList, cartListener, favoriteListener, productDetailsClickListener, sharedVM);
         recyclerView.setAdapter(adapter);
-        recyclerView.addItemDecoration(new SearchItemSpacingDecoration(DpToPixels.convert(12, getContext())));
+        recyclerView.addItemDecoration(new SearchItemSpacingDecoration(DpToPixels.convert(12, requireActivity())));
     }
 
     public void favoriteIsEmptyVisibilitySet() {

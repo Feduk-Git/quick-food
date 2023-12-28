@@ -18,10 +18,11 @@
 
     <TextView
         android:id="@+id/item_name__popular_item"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@+id/item_image__popular_item"
         app:layout_constraintStart_toStartOf="@+id/item_image__popular_item"
+        app:layout_constraintEnd_toEndOf="@+id/item_image__popular_item"
         android:layout_marginTop="8dp"
         android:text="Pastries"
         android:fontFamily="@font/inter_bold"

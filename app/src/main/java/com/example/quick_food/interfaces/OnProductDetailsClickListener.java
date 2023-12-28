@@ -1,7 +1,7 @@
 package com.example.quick_food.interfaces;
 
-import com.example.quick_food.models.DishModel;
+import com.example.quick_food.models.Product;
 
 public interface OnProductDetailsClickListener {
-    void onProductDetailsClick(DishModel item);
+    void onProductDetailsClick(Product item);
 }

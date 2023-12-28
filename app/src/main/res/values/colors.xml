@@ -14,6 +14,7 @@
     <color name="red">#eb0000</color>
     <color name="hint_red">#FF7272</color>
     <color name="green">#1ABD00</color>
+    <color name="accent_yellow">#E65D5C</color>
 
 
 </resources>

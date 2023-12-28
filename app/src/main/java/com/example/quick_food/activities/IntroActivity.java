@@ -15,18 +15,25 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.quick_food.ServerConnection;
 import com.example.quick_food.adapters.PopularItemsAdapter;
 import com.example.quick_food.interfaces.OnProductDetailsClickListener;
-import com.example.quick_food.models.DishModel;
+import com.example.quick_food.models.Category;
+import com.example.quick_food.models.Product;
 import com.example.quick_food.R;
 import com.example.quick_food.utils.DpToPixels;
 import com.example.quick_food.utils.PopularItemSpacingDecoration;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class IntroActivity extends AppCompatActivity implements OnProductDetailsClickListener {
-    private final List<DishModel> itemList = new ArrayList<>();
+    private List<Product> itemList;
     private LinearLayout ll;
     private Intent intent;
     private long backPressedTime = 0;
@@ -46,9 +53,15 @@ public class IntroActivity extends AppCompatActivity implements OnProductDetails
         ImageView searchIV = findViewById(R.id.search_button_iv__intro_activity);
         EditText searchBarET = findViewById(R.id.search_bar__intro_activity);
 
-        for (int i = 0; i < 16; i ++) {
-            itemList.add(new DishModel("", "testName" + i, "testDesc"));
-        }
+        new Thread(() -> {
+            itemList = ServerConnection.getInstance().getPopularProducts(10);
+
+            runOnUiThread(() -> {
+                setupRecyclerView();
+                int elementsPerPage = 3;
+                setupDots(getPagesCount(elementsPerPage));
+            });
+        }).start();
 
         skipTV.setOnClickListener(v -> {
             startActivity(intent);
@@ -63,10 +76,6 @@ public class IntroActivity extends AppCompatActivity implements OnProductDetails
                 finish();
             }
         });
-
-        setupRecyclerView();
-        int elementsPerPage = 3;
-        setupDots(getPagesCount(elementsPerPage));
     }
 
     @Override
@@ -80,7 +89,7 @@ public class IntroActivity extends AppCompatActivity implements OnProductDetails
     }
 
     @Override
-    public void onProductDetailsClick(DishModel item) {
+    public void onProductDetailsClick(Product item) {
         intent.putExtra("dishModel", item);
         startActivity(intent);
         finish();

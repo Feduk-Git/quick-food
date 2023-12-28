@@ -1,5 +1,7 @@
 package com.example.quick_food.adapters;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,17 +12,19 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.quick_food.ServerConnection;
 import com.example.quick_food.interfaces.OnProductDetailsClickListener;
-import com.example.quick_food.models.DishModel;
+import com.example.quick_food.models.Product;
 import com.example.quick_food.R;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
 public class PopularItemsAdapter extends RecyclerView.Adapter<PopularItemsAdapter.PopularItemViewHolder>{
-    private final List<DishModel> items;
+    private final List<Product> items;
     private final OnProductDetailsClickListener productDetailsClickListener;
 
-    public PopularItemsAdapter(List<DishModel> items, OnProductDetailsClickListener productDetailsClickListener) {
+    public PopularItemsAdapter(List<Product> items, OnProductDetailsClickListener productDetailsClickListener) {
         this.items = items;
         this.productDetailsClickListener = productDetailsClickListener;
     }
@@ -35,10 +39,12 @@ public class PopularItemsAdapter extends RecyclerView.Adapter<PopularItemsAdapte
 
     @Override
     public void onBindViewHolder(@NonNull PopularItemViewHolder holder, int position) {
-        holder.imageView.setImageResource(R.drawable.img2);
-        holder.textView.setText(items.get(position).name);
+        Product product = items.get(position);
+        holder.nameTV.setText(product.name);
 
-        holder.rootCL.setOnClickListener(v -> productDetailsClickListener.onProductDetailsClick(items.get(position)));
+        Picasso.get().load(ServerConnection.getInstance().host + "api/image/get_product_image/" + product.id).into(holder.imageView);
+
+        holder.rootCL.setOnClickListener(v -> productDetailsClickListener.onProductDetailsClick(product));
     }
 
     @Override
@@ -48,13 +54,13 @@ public class PopularItemsAdapter extends RecyclerView.Adapter<PopularItemsAdapte
 
     public static class PopularItemViewHolder extends RecyclerView.ViewHolder {
         public ImageView imageView;
-        public TextView textView;
+        public TextView nameTV;
         public ConstraintLayout rootCL;
 
         public PopularItemViewHolder(@NonNull View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.item_image__popular_item);
-            textView = itemView.findViewById(R.id.item_name__popular_item);
+            nameTV = itemView.findViewById(R.id.item_name__popular_item);
             rootCL = itemView.findViewById(R.id.root_cl__popular_item);
         }
     }

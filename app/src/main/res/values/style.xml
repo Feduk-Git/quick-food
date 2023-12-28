@@ -4,4 +4,18 @@
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">20dp</item>
     </style>
+    <style name="CustomOutlineBox" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor">@color/accent</item>
+        <item name="android:textColorHint">@color/grey</item>
+        <item name="hintTextColor">@color/accent</item>
+        <item name="helperTextTextColor">@color/accent</item>
+        <item name="counterTextColor">@color/grey</item>
+        <item name="backgroundTint">@color/text_input_layout_colors</item>
+
+    </style>
+    <style name="PrefixText" parent="Base.TextAppearance.AppCompat.Body2">
+        <item name="android:textSize">14sp</item>
+        <item name="fontFamily">@font/inter_regular</item>
+    </style>
+
 </resources>
